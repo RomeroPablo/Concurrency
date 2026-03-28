@@ -1,6 +1,0 @@
-#line 11 "ch2"
-    #include <iostream>
-    int main(){
-        std::cout << "trying infinite loop" << std::endl;
-        while(1){std::cout << "well?" << '\r' << std::flush;}
-    }
