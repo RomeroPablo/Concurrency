@@ -1,0 +1,125 @@
+C++11 introduced cross-platform multithreading in the STL
+
+Concurrency:
+For a long time, the only form of concurrency available to computer systems was
+in the form of task-switching, that is, switching between N number of different
+tasks at the same time, giving the allusion that the tasks were being accomplished
+at the same time.
+There are subtle differences between this widely accepted form of concurrency and
+true concurrency, that is, operations occuring in parallel across mulitple
+processors/systems. Particularly when it comes to the memory model of such systems.
+
+We will refer to "real concurrency" as hardware concurrency.
+
+                  Hardware       
+Concurrency      Concurrency     
+┌────────┐   ┌────────┐┌────────┐
+│ Task 0 │   │ Task 0 ││ Task 1 │
+│ ────── │   │   │    ││   │    │
+│ Task 1 │   │   │    ││   │    │
+│ ────── │   │   │    ││   │    │
+│ Task 0 │   │   │    ││   │    │
+│ ────── │   │   ▼    ││   ▼    │
+│ Task 1 │   │        ││        │
+│ ────── │   │        ││        │
+│ Task 0 │   │        ││        │
+│ ────── │   │        ││        │
+│ Task 1 │   │        ││        │
+└────────┘   └────────┘└────────┘
+
+Note that even on a multi-processor system, we still may employ concurrency in
+conjunction with hardware concurrency.
+
+the following is a code snippet, you can test it by running:
+┌─────────────┐
+│ $ Make ch1  │
+└─────────────┘
+
+<c++>
+    #include <iostream>
+    int main(){
+        std::cout << "Embedded Code Block 0" << std::endl;
+    }
+</c++>
+
+The naive way to take advantage of concurrency is to seperate the application in N-processes
+that communicate through operating system interprocess communication primitives, such as
+sockets, pipes, signals, files, etc.
+however, this may come with the downside of being slow or hard to set up, as you are the whims
+of the underlying operating system.
+┌───────────┐  ┌─────────┐  ┌───────────┐
+│ Process 1 │  │ OS      │  │ Process 2 │
+│ ┌──────┐  │  │  ┌───┐  │  │ ┌──────┐  │
+│ │Thread│◄─┼──┼─►│IPC│◄─┼──┼►│Thread│  │
+│ └──────┘  │  │  └───┘  │  │ └──────┘  │
+└───────────┘  └─────────┘  └───────────┘
+There is also the inherit cost of the operating system starting and managing the processes
+(Which we will come to find is larger than just starting a thread)
+The upside of using multiple processes as a concurrency method is the ability to take advantage
+of the OS interprocess communication mechanisms, which makes it drastically easier to write
+safe code. Erlang takes this approach, and considers programs as their atomic building block.
+It also makes it trivially easy to deploy the application across multiple systems on a network.
+
+A seperate approach to concurrency is utilizing multiple threads in the same process. This has
+the advantage of a shared memory space between the threads, such as shared globals and memory
+addresses.
+┌────────────────────────────────────┐
+│ Process                            │
+│             ┌────────┐             │
+│┌────────┐   │ Shared │   ┌────────┐│
+││Thread 1├──►│ Memory │◄──┤Thread 2││
+│└────────┘   └────────┘   └────────┘│
+└────────────────────────────────────┘
+This allows lighter weight and faster communication between concurrent tasks, but this also
+leaves safety and consistency up to the programmer. This is non-trivial but not impossible,
+and different techniques may work best given the tasks at hand.
+
+When to use concurrency:
+    a) seperation of concerns
+    b) performance
+
+Task Parallelism -
+┌────┐  ┌──────┐                       
+│0xFA├─►│Thread├─────┐                 
+└────┘  └──────┘     ▼                 
+                  ┌──────┐             
+                  │Thread├──────┐      
+                  └──────┘      │      
+┌────┐  ┌──────┐     ▲          ▼      
+│0xCE├─►│Thread├─────┘       ┌──────┐  
+└────┘  └──────┘             │Thread├─►
+                             └──────┘  
+┌────┐  ┌──────┐                ▲      
+│0xDE├─►│Thread├────────────────┘      
+└────┘  └──────┘                       
+
+Data Parallelism -
+┌────┐  ┌──────┐  ┌────┐
+│0xFA├─►│Thread├─►│0xAD│
+└────┘  └──────┘  └────┘
+┌────┐  ┌──────┐  ┌────┐
+│0xCE├─►│Thread├─►│0xBE│
+└────┘  └──────┘  └────┘
+┌────┐  ┌──────┐  ┌────┐
+│0xDE├─►│Thread├─►│0xEF│
+└────┘  └──────┘  └────┘
+
+Some algorithms have clear distinctions of independent work that can be parallelized, such
+that as the number of threads scales the amount of work that can be done scales ~accordingly
+these problems are called embarrassingly parallel. 
+
+Some other problems might be divisible into a static number of seperate tasks.
+
+Sometimes, we may be able to use more threads to do more of the task. e.g. writing multiple files
+at the same time, or processing separate areas of a video frame.
+
+You should not use concurrency if the overhead of managing the thread is more than the task
+Threads are a limited resource, and each one takes up memory and scheduling resources
+Thread pools can alleviate this issue, but they come with their own problems.
+
+C++11 introduced classes for managing:
+    <thread>             Threads
+    <mutex>              Protecting shared data
+    <condition_variable> Synchronizing operations between threads
+    <atomic>             Low-level atomic operations
+

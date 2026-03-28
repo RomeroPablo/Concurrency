@@ -1,0 +1,5 @@
+#line 39 "ch1"
+    #include <iostream>
+    int main(){
+        std::cout << "Embedded Code Block 0" << std::endl;
+    }
