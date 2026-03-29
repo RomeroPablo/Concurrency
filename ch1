@@ -1,8 +1,5 @@
-┌┬┬┬┬┬┬┬┬┬┬┬┬┬┬┬┬┐  
-├┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┤  
-│  Concurrency   │  
-└────────────────┘  
-
+Concurrency
+──────────────────────────────────────────────────────────────────────────────────────────────────
 For a long time, the only form of concurrency available to computer systems was
 in the form of task-switching, that is, switching between N number of different
 tasks at the same time, giving the allusion that the tasks were being accomplished
@@ -34,7 +31,7 @@ conjunction with hardware concurrency.
 
 the following is a code snippet, you can test it by running:
 ┌─────────────┐
-│ $ Make ch1  │
+│ $ make ch1  │
 └─────────────┘
 
 <c++>
@@ -124,11 +121,11 @@ C++11 introduced classes for managing:
     <mutex>              Protecting shared data
     <condition_variable> Synchronizing operations between threads
     <atomic>             Low-level atomic operations
-If we wish to use platform specific API's these can be can be accessed through the CPP STL
+If we wish to use platform specific API's these can be can be accessed with the C++ STL
 through calls to `native_handle()`, though a majority of use cases should be handled by the STL
 
-a concurrent c++ program looks like many other c++ program, but now, we must ensure that shared
-data is safe for concurrent access. we must also set up infra to even run the concurrent threads
+a concurrent c++ program looks like many other c++ programs, but now, we must ensure that shared
+data is safe for concurrent access. we must also set up infra. to run the concurrent threads
 
 <c++>
 #include <iostream>
