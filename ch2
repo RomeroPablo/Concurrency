@@ -1,7 +1,72 @@
 Managing Threads
 ──────────────────────────────────────────────────────────────────────────────────────────────────
-<c++>
-int main(){
+Once we choose to use concurrency, we will typically need the ability to launch threads, wait for
+them to finish, run in the background, pass parameters, transfer ownership...
+It'll also be useful to have an eye for the number the threads our application might use
 
+Every C++ program has atleast one thread, referred to as the main thread. This is the thread
+running the function `main()`. From this thread, we can launch other threads.
+Threads run until they return, at which point they stop.
+Threads can be initialized with any C++ `callable` type, that is, any entity that can be invoked
+using the function-call syntax `()`
+<c++>
+#include <thread>
+#include <iostream>
+struct callableStruct{
+    void operator()()const{
+        std::cout << "Ran Callable Struct" << std::endl;
+    }
+};
+
+int main(){
+    callableStruct s{};
+    std::thread t(s);
+    t.join();
 }
 </c++>
+
+Note that the Object is *copied* into the storage of the thread, thus it is expected that the copy
+behave just as the original for clarity. 
+
+Note that the following, where we pass a temporary rather than a named variable, --
+<c++>
+#include <thread>
+#include <iostream>
+struct callableStruct{
+    void operator()()const{
+        std::cout << "Ran Callable Struct" << std::endl;
+    }
+};
+
+int main(){
+    callableStruct s{};
+    std::thread t(callableStruct());
+}
+</c++>
+-- compiles and achieves completion, but does not actually launch a thread. In actuality, adding
+`t.join()` at the end causes the program to fail compilation. In reality, the code is compiling 
+to the following:
+
+    std::thread t(callableStruct());
+       ▲        ▲          ▲
+       │        │          │
+       └─Return └─Function └─Parameter
+           Type       Name        Type
+
+This can be avoided by using
+    a) std::thread t((callableStruct()));   // extra set of parantheses
+    b) std::thread t{callableStruct()};     // uniform initialization
+
+A type of callable object that completely avoids this issue is the lambda expression
+<c++>
+#include <thread>
+#include <iostream>
+    int main(){
+        std::thread t([]{std::cout << "Ran λ" << std::endl;});
+        t.join();
+    }
+</c++>
+
+ λ
+──────────────────────────────────────────────────────────────────────────────────────────────────
+
