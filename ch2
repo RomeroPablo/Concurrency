@@ -24,9 +24,8 @@ int main(){
     t.join();
 }
 </c++>
-
 Note that the Object is *copied* into the storage of the thread, thus it is expected that the copy
-behave just as the original for clarity. 
+behavior is equivalent to the original for clarity. 
 
 Note that the following, where we pass a temporary rather than a named variable, --
 <c++>
@@ -69,4 +68,12 @@ A type of callable object that completely avoids this issue is the lambda expres
 
  λ
 ──────────────────────────────────────────────────────────────────────────────────────────────────
+The simplest lamba expression defines a self-contained function that takes no paramaters, and
+relies only on global variables and functions. It is not required to have a return value.
+A lambda expression may take the following form:
+
+    []{                                 // begin the λ expression with `[]`
+        std::cout << "λ expression\n";
+    }();                                // finish the λ and call it
+
 
