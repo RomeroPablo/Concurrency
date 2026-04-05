@@ -76,4 +76,33 @@ A lambda expression may take the following form:
         std::cout << "λ expression\n";
     }();                                // finish the λ and call it
 
+the previous example is quite silly, as it takes no reference to any state, no input paramaters,
+performs an immutable operation, and is immediately called. The lambda function could logically be
+replaced with simply inligning the code:
+    std::cout << "λ expression\n";
+A more interesting example may take the following form:
+<c++>
+#include <iostream>
+#include <vector>
+int main(){
+    std::vector<int> data = {1, 2, 3, 5, 8};
+    std::for_each(data.begin(), data.end(), [](int i){std::cout << i << ", ";});
+    std::cout << std::endl;
+}
+</c++>
+The λ above is passed to std::for_each as a callable object, and uses a paramter list declared
+after its lambda introducer, [].
 
+Return values can be implied by having a return statement inside your lambda, e.g.
+
+<c++>
+#include <iostream>
+int main(){
+    std::cout << "Lambda returned: " << [](){
+        std::cout <<"<λ returns implicit Integer> " ;
+        return 42;
+    }() << std::endl;
+}
+</c++>
+
+prints out the return value of 42.
