@@ -90,7 +90,8 @@ int main(){
     std::cout << std::endl;
 }
 </c++>
-The λ above is passed to std::for_each as a callable object, and uses a paramter list declared
+
+The λ above is passed to std::for_each as a callable object, and uses a parameter list declared
 after its lambda introducer, [].
 
 Return values can be implied by having a return statement inside your lambda, e.g.
@@ -106,3 +107,14 @@ int main(){
 </c++>
 
 prints out the return value of 42.
+
+Here is a more complicated (but slightly more useful) example
+<c++>
+#include <mutex>
+#include <thread>
+#include <condition_variable>
+int main(){
+    std::condition_variable cond;
+};
+</c++>
+──────────────────────────────────────────────────────────────────────────────────────────────────
