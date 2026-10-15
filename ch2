@@ -1,14 +1,17 @@
+────────────────────────────────────────────────────────────────────────────────────────────────────
 Managing Threads
-──────────────────────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
 Once we choose to use concurrency, we will typically need the ability to launch threads, wait for
 them to finish, run in the background, pass parameters, transfer ownership...
-It'll also be useful to have an eye for the number the threads our application might use
+It will also be useful to have an eye for the number the threads our application might use
 
-Every C++ program has atleast one thread, referred to as the main thread. This is the thread
-running the function `main()`. From this thread, we can launch other threads.
+Every C++ program has atleast one thread, referred to as the main thread. This is the thread running
+the function `main()`. From this thread we can launch other threads.
 Threads run until they return, at which point they stop.
 Threads can be initialized with any C++ `callable` type, that is, any entity that can be invoked
 using the function-call syntax `()`
+
 <c++>
 #include <thread>
 #include <iostream>
@@ -24,10 +27,12 @@ int main(){
     t.join();
 }
 </c++>
-Note that the Object is *copied* into the storage of the thread, thus it is expected that the copy
-behavior is equivalent to the original for clarity. 
 
-Note that the following, where we pass a temporary rather than a named variable, --
+Note that the Object is *copied* into the storage of the thread, thus it is typically expected that 
+the target behavior is equivalent to the source for clarity. 
+
+Note the following where we pass a temporary rather than a named variable, --
+
 <c++>
 #include <thread>
 #include <iostream>
@@ -42,9 +47,10 @@ int main(){
     std::thread t(callableStruct());
 }
 </c++>
--- compiles and achieves completion, but does not actually launch a thread. In actuality, adding
-`t.join()` at the end causes the program to fail compilation. In reality, the code is compiling 
-to the following:
+
+-- compiles and runs, but does not actually launch a thread. In actuality, adding `t.join()` to 
+the end of the statement causes the program to fail compilation. 
+In reality, the code is compiling to the following:
 
     std::thread t(callableStruct());
        ▲        ▲          ▲
@@ -57,6 +63,7 @@ This can be avoided by using
     b) std::thread t{callableStruct()};     // uniform initialization
 
 A type of callable object that completely avoids this issue is the lambda expression
+
 <c++>
 #include <thread>
 #include <iostream>
@@ -66,8 +73,9 @@ A type of callable object that completely avoids this issue is the lambda expres
     }
 </c++>
 
+────────────────────────────────────────────────────────────────────────────────────────────────────
  λ
-──────────────────────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────────────────────────
 The simplest lamba expression defines a self-contained function that takes no paramaters, and
 relies only on global variables and functions. It is not required to have a return value.
 A lambda expression may take the following form:
@@ -81,6 +89,7 @@ performs an immutable operation, and is immediately called. The lambda function 
 replaced with simply inligning the code:
     std::cout << "λ expression\n";
 A more interesting example may take the following form:
+
 <c++>
 #include <iostream>
 #include <vector>
@@ -109,6 +118,7 @@ int main(){
 prints out the return value of 42.
 
 Here is a more complicated (but slightly more useful) example
+
 <c++>
 #include <mutex>
 #include <thread>
@@ -117,4 +127,4 @@ int main(){
     std::condition_variable cond;
 };
 </c++>
-──────────────────────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────────────────────────
